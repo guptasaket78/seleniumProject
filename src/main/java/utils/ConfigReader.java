@@ -1,13 +1,13 @@
 package utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import config.FrameworkConfig;
 
 import java.io.InputStream;
-import java.util.Map;
 
 public class ConfigReader {
 
-    private static Map<String, Object> config;
+    private static final FrameworkConfig CONFIG;
 
     static {
         try {
@@ -18,46 +18,70 @@ public class ConfigReader {
             if (is == null) {
                 throw new RuntimeException("config/config.json was not found on the classpath");
             }
-            config = mapper.readValue(is, Map.class);
+            CONFIG = mapper.readValue(is, FrameworkConfig.class);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load config.json", e);
         }
     }
 
     public static String getBrowser() {
-        return (String) config.get("browser");
+        return readOverride("browser", CONFIG.getExecution().getBrowser());
     }
 
     public static boolean isHeadless() {
-        return (Boolean) config.get("headless");
+        return Boolean.parseBoolean(readOverride("headless", String.valueOf(CONFIG.getExecution().isHeadless())));
     }
 
     public static int getExplicitWait() {
-        Map<String, Integer> timeouts = (Map<String, Integer>) config.get("timeouts");
-        return timeouts.get("explicit");
+        return CONFIG.getTimeouts().getExplicit();
     }
 
     public static int getImplicitWait() {
-        Map<String, Integer> timeouts = (Map<String, Integer>) config.get("timeouts");
-        return timeouts.get("implicit");
+        return CONFIG.getTimeouts().getImplicit();
     }
 
     public static int getPageLoadTimeout() {
-        Map<String, Integer> timeouts = (Map<String, Integer>) config.get("timeouts");
-        return timeouts.get("pageLoad");
+        return CONFIG.getTimeouts().getPageLoad();
+    }
+
+    public static String getEnvironment() {
+        return readOverride("env", CONFIG.getDefaultEnvironment());
     }
 
     public static String getBaseUrl() {
-        return (String) config.get("baseUrl");
+        String baseUrlOverride = System.getProperty("baseUrl");
+        if (baseUrlOverride != null && !baseUrlOverride.isBlank()) {
+            return baseUrlOverride;
+        }
+
+        FrameworkConfig.EnvironmentConfig environmentConfig = CONFIG.getEnvironments().get(getEnvironment());
+        if (environmentConfig == null || environmentConfig.getBaseUrl() == null || environmentConfig.getBaseUrl().isBlank()) {
+            throw new IllegalStateException("No baseUrl configured for environment: " + getEnvironment());
+        }
+        return environmentConfig.getBaseUrl();
     }
 
     public static String getUsername(String userProfile) {
-        Map<String, Map<String, String>> users = (Map<String, Map<String, String>>) config.get("users");
-        return users.get(userProfile).get("username");
+        FrameworkConfig.UserConfig user = CONFIG.getUsers().get(userProfile);
+        if (user == null) {
+            throw new IllegalArgumentException("Unknown user profile: " + userProfile);
+        }
+        return readOverride(userProfile + ".username", user.getUsername());
     }
 
     public static String getPassword(String userProfile) {
-        Map<String, Map<String, String>> users = (Map<String, Map<String, String>>) config.get("users");
-        return users.get(userProfile).get("password");
+        FrameworkConfig.UserConfig user = CONFIG.getUsers().get(userProfile);
+        if (user == null) {
+            throw new IllegalArgumentException("Unknown user profile: " + userProfile);
+        }
+        return readOverride(userProfile + ".password", user.getPassword());
+    }
+
+    private static String readOverride(String key, String defaultValue) {
+        String override = System.getProperty(key);
+        if (override == null || override.isBlank()) {
+            return defaultValue;
+        }
+        return override;
     }
 }

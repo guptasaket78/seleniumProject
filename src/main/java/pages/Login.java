@@ -2,13 +2,9 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import utils.ConfigReader;
-import utils.WaitUtils;
 
-public class Login {
-
-    private final WebDriver driver;
+public class Login extends BasePage {
 
     private final By loginHeader = By.xpath("//h2[normalize-space()='Login to your account']");
     private final By emailInput = By.cssSelector("form[action='/login'] input[data-qa='login-email']");
@@ -17,7 +13,7 @@ public class Login {
     private final By loggedInAsBanner = By.xpath("//a[contains(.,'Logged in as')]");
 
     public Login(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void open() {
@@ -25,26 +21,20 @@ public class Login {
     }
 
     public boolean isLoginFormVisible() {
-        return WaitUtils.waitForVisible(driver, loginHeader).isDisplayed();
+        return isVisible(loginHeader);
     }
 
     public void loginAs(String email, String password) {
-        WebElement emailField = WaitUtils.waitForVisible(driver, emailInput);
-        emailField.clear();
-        emailField.sendKeys(email);
-
-        WebElement passwordField = WaitUtils.waitForVisible(driver, passwordInput);
-        passwordField.clear();
-        passwordField.sendKeys(password);
-
-        WaitUtils.waitForClickable(driver, loginButton).click();
+        type(emailInput, email);
+        type(passwordInput, password);
+        click(loginButton);
     }
 
     public boolean isLoggedIn() {
-        return WaitUtils.waitForVisible(driver, loggedInAsBanner).isDisplayed();
+        return isVisible(loggedInAsBanner);
     }
 
     public String getLoggedInBannerText() {
-        return WaitUtils.waitForVisible(driver, loggedInAsBanner).getText();
+        return findVisible(loggedInAsBanner).getText();
     }
 }

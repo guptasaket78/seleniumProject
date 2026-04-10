@@ -3,7 +3,7 @@ package keywords;
 import pages.Login;
 import utils.ConfigReader;
 
-public class LoginKeywords {
+public class LoginKeywords extends BaseKeywords {
 
     private final Login loginPage;
 
@@ -12,20 +12,20 @@ public class LoginKeywords {
     }
 
     public void openLoginPage() {
-        loginPage.open();
-        if (!loginPage.isLoginFormVisible()) {
-            throw new IllegalStateException("Expected the login form to be visible.");
-        }
+        step("Open the login page", () -> {
+            loginPage.open();
+            verifyTrue(loginPage.isLoginFormVisible(), "Expected the login form to be visible.");
+        });
     }
 
     public void loginWithRegisteredUser(String userProfile) {
-        loginPage.loginAs(
-                ConfigReader.getUsername(userProfile),
-                ConfigReader.getPassword(userProfile)
-        );
+        step("Login with registered user profile: " + userProfile, () -> {
+            loginPage.loginAs(
+                    ConfigReader.getUsername(userProfile),
+                    ConfigReader.getPassword(userProfile)
+            );
 
-        if (!loginPage.isLoggedIn()) {
-            throw new IllegalStateException("Expected the user to be logged in.");
-        }
+            verifyTrue(loginPage.isLoggedIn(), "Expected the user to be logged in.");
+        });
     }
 }

@@ -1,12 +1,19 @@
 {
-  "browser": "chrome",
-  "headless": false,
+  "execution": {
+    "browser": "chrome",
+    "headless": false
+  },
   "timeouts": {
     "implicit": 10,
     "explicit": 20,
     "pageLoad": 30
   },
-  "baseUrl": "https://automationexercise.com",
+  "defaultEnvironment": "qa",
+  "environments": {
+    "qa": {
+      "baseUrl": "https://automationexercise.com"
+    }
+  },
   "users": {
     "standard": {
       "username": "registered.user@example.com",
