@@ -18,4 +18,4 @@ jobs:
           cache: maven
 
       - name: Compile and run tests
-        run: mvn -B clean test
+        run: mvn -B clean test -Dheadless=true
