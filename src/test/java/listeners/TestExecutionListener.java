@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
 public class TestExecutionListener implements ITestListener, IExecutionListener {
@@ -39,6 +40,18 @@ public class TestExecutionListener implements ITestListener, IExecutionListener 
             Path.of("/opt/homebrew/bin/python3"),
             Path.of("/usr/local/bin/python3")
     );
+
+    @Override
+    public void onExecutionStart() {
+        cleanDirectory(ALLURE_RESULTS_DIR);
+        cleanDirectory(ALLURE_REPORT_DIR);
+
+        try {
+            Files.deleteIfExists(ALLURE_SERVER_LOG);
+        } catch (IOException ignored) {
+            // Best effort cleanup only.
+        }
+    }
 
     @Override
     public void onTestFailure(ITestResult result) {
@@ -203,6 +216,25 @@ public class TestExecutionListener implements ITestListener, IExecutionListener 
             return socket.getLocalPort();
         } catch (IOException ignored) {
             return -1;
+        }
+    }
+
+    private void cleanDirectory(Path directory) {
+        if (!Files.exists(directory)) {
+            return;
+        }
+
+        try (var paths = Files.walk(directory)) {
+            paths.sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (IOException ignored) {
+                            // Best effort cleanup only.
+                        }
+                    });
+        } catch (IOException ignored) {
+            // Best effort cleanup only.
         }
     }
 
