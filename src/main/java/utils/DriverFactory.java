@@ -31,8 +31,11 @@ public class DriverFactory {
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--start-maximized");
+                chromeOptions.addArguments("--disable-notifications");
+                chromeOptions.addArguments("--remote-allow-origins=*");
                 if (ConfigReader.isHeadless()) {
                     chromeOptions.addArguments("--headless=new");
+                    chromeOptions.addArguments("--window-size=1920,1080");
                 }
                 driver = new ChromeDriver(chromeOptions);
                 break;
