@@ -1,0 +1,16 @@
+{
+  "browser": "chrome",
+  "headless": false,
+  "timeouts": {
+    "implicit": 10,
+    "explicit": 20,
+    "pageLoad": 30
+  },
+  "baseUrl": "https://automationexercise.com",
+  "users": {
+    "standard": {
+      "username": "registered.user@example.com",
+      "password": "ChangeMe123!"
+    }
+  }
+}
