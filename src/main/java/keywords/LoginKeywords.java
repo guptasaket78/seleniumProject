@@ -16,17 +16,19 @@ public class LoginKeywords extends BaseKeywords {
     public void openLoginPage() {
         step("Open the login page", () -> {
             open(loginPage.path);
-            verifyTrue(isVisible(loginPage.loginHeader), "Expected the login form to be visible.");
+            verifyTrue(loginPage.loginHeader().isDisplayed(), "Expected the login form to be visible.");
         });
     }
 
     public void loginWithRegisteredUser(String userProfile) {
         step("Login with registered user profile: " + userProfile, () -> {
-            type(loginPage.emailInput, ConfigReader.getUsername(userProfile));
-            type(loginPage.passwordInput, ConfigReader.getPassword(userProfile));
-            click(loginPage.loginButton);
+            loginPage.emailInput().clear();
+            loginPage.emailInput().sendKeys(ConfigReader.getUsername(userProfile));
+            loginPage.passwordInput().clear();
+            loginPage.passwordInput().sendKeys(ConfigReader.getPassword(userProfile));
+            loginPage.loginButton().click();
 
-            verifyTrue(isVisible(loginPage.loggedInAsBanner), "Expected the user to be logged in.");
+            verifyTrue(loginPage.loggedInAsBanner().isDisplayed(), "Expected the user to be logged in.");
         });
     }
 }

@@ -29,7 +29,7 @@ public abstract class BaseUiTest {
             throw e;
         }
         DriverManager.setDriver(driver);
-        loginPage = new Login();
+        loginPage = new Login(driver);
         loginKeywords = new LoginKeywords(driver, loginPage);
     }
 
