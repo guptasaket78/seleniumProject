@@ -29,8 +29,8 @@ public abstract class BaseUiTest {
             throw e;
         }
         DriverManager.setDriver(driver);
-        loginPage = new Login(driver);
-        loginKeywords = new LoginKeywords(loginPage);
+        loginPage = new Login();
+        loginKeywords = new LoginKeywords(driver, loginPage);
     }
 
     @AfterMethod(alwaysRun = true)
