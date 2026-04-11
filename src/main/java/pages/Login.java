@@ -2,39 +2,40 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import utils.ConfigReader;
+import org.openqa.selenium.WebElement;
+import utils.WaitUtils;
 
-public class Login extends BasePage {
+public class Login {
 
-    private final By loginHeader = By.xpath("//h2[normalize-space()='Login to your account']");
-    private final By emailInput = By.cssSelector("form[action='/login'] input[data-qa='login-email']");
-    private final By passwordInput = By.cssSelector("form[action='/login'] input[data-qa='login-password']");
-    private final By loginButton = By.cssSelector("form[action='/login'] button[data-qa='login-button']");
-    private final By loggedInAsBanner = By.xpath("//a[contains(.,'Logged in as')]");
+    public final String path = "/login";
+    private final WebDriver driver;
 
     public Login(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
     }
 
-    public void open() {
-        driver.get(ConfigReader.getBaseUrl() + "/login");
+    public WebElement loginHeader() {
+        By element = By.xpath("//h2[normalize-space()='Login to your account']");
+        return WaitUtils.waitForVisible(driver, element);
     }
 
-    public boolean isLoginFormVisible() {
-        return isVisible(loginHeader);
+    public WebElement emailInput() {
+        By element = By.cssSelector("form[action='/login'] input[data-qa='login-email']");
+        return WaitUtils.waitForVisible(driver, element);
     }
 
-    public void loginAs(String email, String password) {
-        type(emailInput, email);
-        type(passwordInput, password);
-        click(loginButton);
+    public WebElement passwordInput() {
+        By element = By.cssSelector("form[action='/login'] input[data-qa='login-password']");
+        return WaitUtils.waitForVisible(driver, element);
     }
 
-    public boolean isLoggedIn() {
-        return isVisible(loggedInAsBanner);
+    public WebElement loginButton() {
+        By element = By.cssSelector("form[action='/login'] button[data-qa='login-button']");
+        return WaitUtils.waitForClickable(driver, element);
     }
 
-    public String getLoggedInBannerText() {
-        return findVisible(loggedInAsBanner).getText();
+    public WebElement loggedInAsBanner() {
+        By element = By.xpath("//a[contains(.,'Logged in as')]");
+        return WaitUtils.waitForVisible(driver, element);
     }
 }
